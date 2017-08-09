@@ -27,10 +27,17 @@ account_sid = "XXXX"
 auth_token = "XXXX"
 client = Client(account_sid, auth_token)
 
+@app.route("/", methods=['GET'])
+def welcome():
+    return "Welcome to the homepage"
+
 #sends text message to "to" with body "body"
-message = client.api.account.messages.create(to="XXXXXXXX",
-                                             from_="XXXXXXX",
-                                             body="test")
+@app.route("/broadcast", methods=['GET','POST'])
+def broadcast():
+    message = client.api.account.messages.create(to="XXXX",
+                                                 from_="XXXX",
+                                                 body="test")
+    return str(message)
 
 #add callers section to respond to personalize response to incoming text
 callers = {
@@ -39,8 +46,8 @@ callers = {
     "num3" : "name_3"
 }
 
-@app.route("/", methods=['GET','POST'])
-def respond():
+@app.route("/sms_answer", methods=['GET','POST'])
+def sms_respond():
     """Respond to texter by name"""
 
     from_number = request.values.get('From', None)
