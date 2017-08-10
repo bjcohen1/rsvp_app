@@ -8,28 +8,47 @@ from functools import wraps
 from twilio.rest import Client
 from twilio.twiml.messaging_response import MessagingResponse
 
-#from sqlalchemy import create_engine
-#from sqlalchemy.orm import sessionmaker
-#from database_setup import Base, Category, ListItem, User
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, User
 
-from flask import session as login_session
 import random
 import string
 
-#import httplib2
-#import json
 from flask import make_response
-#import requests
 
 app = Flask(__name__)
+
+engine = create_engine('sqlite://signedup.db')
+Base.metadata.bind = engine
+
+DBSession = sessionmaker(bind=engine)
+session = DBSession
 
 account_sid = "XXXX"
 auth_token = "XXXX"
 client = Client(account_sid, auth_token)
 
-@app.route("/", methods=['GET'])
+# helper function to strip user input phone number to just numbers
+def db_number = (user_input):
+    new_number = ""
+    for ch in user_input:
+        if ch in range(0,10):
+            new_number.append(ch)
+        else:
+            pass
+
+@app.route("/", methods=['GET','POST'])
 def welcome():
-    return "Welcome to the homepage"
+    return render_template('homepage.html')
+
+def createUser():
+    if request.method == 'POST':
+        newUser = User(name=name, phone=db_number(phone), email=email)
+        session.add(newUser)
+        session.commit()
+        flash("Thank You For Registering")
+        return redirect()
 
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
