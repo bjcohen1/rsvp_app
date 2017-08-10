@@ -12,5 +12,9 @@ class User(Base):
 
     id = Column(Integer, primary_key = True)
     name = Column(String(80), nullable = False)
-    phone = Column(Integer, nullable = False)
+    phone = Column(String(11), nullable = False)
     email = Column(String(80), nullable = False)
+
+engine = create_engine('sqlite://signedup.db')
+
+Base.metadata.create_all(engine)
