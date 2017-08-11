@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+        <title>You Should Count</title>
+        {% block head %}
+        {% endblock %}
+    </head>
+
+    <body>
+        <h1> The Place to Make Yourself Count! </h1>
+        {% block content %}
+        {% endblock %}
+    </body>
+</html>
