@@ -19,7 +19,7 @@ from flask import make_response
 
 app = Flask(__name__)
 
-engine = create_engine('sqlite://signedup.db')
+engine = create_engine('sqlite:///signedup.db')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -30,7 +30,7 @@ auth_token = "XXXX"
 client = Client(account_sid, auth_token)
 
 # helper function to strip user input phone number to just numbers
-def db_number = (user_input):
+def db_number(user_input):
     new_number = ""
     for ch in user_input:
         if ch in range(0,10):
@@ -40,15 +40,13 @@ def db_number = (user_input):
 
 @app.route("/", methods=['GET','POST'])
 def welcome():
-    return render_template('homepage.html')
-
-def createUser():
     if request.method == 'POST':
         newUser = User(name=name, phone=db_number(phone), email=email)
         session.add(newUser)
         session.commit()
-        flash("Thank You For Registering")
-        return redirect()
+        #return redirect(thank you page)
+    else:
+        return render_template('homepage.html')
 
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])

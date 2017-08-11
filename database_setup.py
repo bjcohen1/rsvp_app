@@ -15,6 +15,6 @@ class User(Base):
     phone = Column(String(11), nullable = False)
     email = Column(String(80), nullable = False)
 
-engine = create_engine('sqlite://signedup.db')
+engine = create_engine('sqlite:///signedup.db')
 
 Base.metadata.create_all(engine)
