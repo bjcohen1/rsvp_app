@@ -3,7 +3,9 @@
 
     {% block content %}
 
-        <form action = " {{ url_for('createUser')}}" enctype = 'multipart/form-data' method = 'post'>
+        <form action = "{{ url_for('welcome') }}" enctype = "multipart/form-data" method = "post">
+
+        <form>
 
             <h3> Name: </h3> <input type = 'text' name = 'name'>
             <h3> Phone: </h3> <input type = 'text' name = 'phone'>
