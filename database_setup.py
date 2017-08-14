@@ -14,6 +14,8 @@ class User(Base):
     name = Column(String(80), nullable = False)
     phone = Column(String(11), nullable = False)
     email = Column(String(80), nullable = False)
+    attendance = Column(Integer, default = 0)
+    tomorrow = Column(Integer, default = 0)
 
 engine = create_engine('sqlite:///signedup.db')
 
