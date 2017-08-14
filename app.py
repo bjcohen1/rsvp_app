@@ -51,7 +51,7 @@ def welcome():
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
 def broadcast():
-    user_numbers = session.query(User).all()
+    user_numbers = session.query(User.phone).all()
     for number in user_numbers:
         message = client.api.account.messages.create(to=number,
                                                      from_="XXXX",
