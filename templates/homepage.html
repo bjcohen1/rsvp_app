@@ -2,14 +2,28 @@
 {% extends "base.html" %}
 
     {% block content %}
+    <div class = "container">
+        <div class = "sign_up col-xs-2 col-md-2">
+            <h2>Sign-up Here:</h2>
 
-        <form action = "{{ url_for('welcome') }}" enctype = "multipart/form-data" method = "post">
+            <form action = "{{ url_for('welcome') }}" enctype = "multipart/form-data" method = "post">
 
-            <h3> Name: </h3> <input type = 'text' name = 'name'>
-            <h3> Phone: </h3> <input type = 'text' name = 'phone'>
-            <h3> Email: </h3> <input type = 'email' name = 'email'>
+                <h3> Name: </h3> <input type = 'text' name = 'name'>
+                <h3> Phone: </h3> <input type = 'text' name = 'phone'>
+                <h3> Email: </h3> <input type = 'email' name = 'email'>
 
-            <input type = 'submit' value = Create>
+                <input type = 'submit' value = "Sign Me Up!">
 
-        </form>
+            </form>
+        </div>
+
+        <div class = "rsvp col-xs-2 col-md-2">
+            <h2>Will you be attending tomorrow?</h2>
+            <h3>Our current count is at:</h3>
+            <h3>Phone Number:</h3> <input type = 'text' name = 'rsvp_phone'>
+            <input type = 'submit' value = "I'll be there!">
+        </div>
+
+    </div>
+
     {% endblock %}
