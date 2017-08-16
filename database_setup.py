@@ -17,6 +17,6 @@ class User(Base):
     attendance = Column(Integer, default = 0)
     tomorrow = Column(Integer, default = 0)
 
-engine = create_engine('sqlite:///signedup.db')
+engine = create_engine('sqlite:///user_info.db')
 
 Base.metadata.create_all(engine)
