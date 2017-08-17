@@ -39,28 +39,38 @@ client = Client(account_sid, auth_token)
 # helper function to strip user input phone number to just numbers
 def db_phone(user_input):
     new_number = ""
+    numbers = [str(i) for i in range(0,10)]
     for ch in user_input:
-        if ch in range(0,10):
-            new_number.append(ch)
+        if ch in numbers:
+            new_number += ch
         else:
             pass
+    return new_number
 
 @app.route("/", methods=['GET','POST'])
-def welcome():
+def homepage():
     if request.method == 'POST':
-        newUser = User(name=name, phone=db_number(phone), email=email)
-        session.add(newUser)
-        session.commit()
-        #return redirect(thank you page)
+        phone = db_phone(request.form['phone'])
+        newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
+        db_session.add(newUser)
+        db_session.commit()
+        return redirect(url_for('homepage'))
     else:
         return render_template('homepage.html')
+
+@app.route("/", methods=['GET','POST'])
+def reset_tomorrow():
+    if request.method == 'POST':
+        tomorrow_column = session.query(User.tomorrow).all()
+        for row in tomorrow_column:
+            row.tomorrow = 0
 
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
 def broadcast():
     user_numbers = session.query(User.phone).all()
     for number in user_numbers:
-        message = client.api.account.messages.create(to=number,
+        message = client.api.account.messages.create(to="XXXX",
                                                      from_="XXXX",
                                                      body="test")
     return str(message)
