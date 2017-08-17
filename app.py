@@ -53,6 +53,9 @@ def registration():
         if request.form['submit'] == "Sign Me Up!":
             phone = db_phone(request.form['phone'])
             newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
+            if request.form.get('tomorrow'):
+                newUser.tomorrow = 1
+                newUser.attendance = 1
             db_session.add(newUser)
             db_session.commit()
             return redirect(url_for('registration'))
