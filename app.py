@@ -48,27 +48,46 @@ def db_phone(user_input):
     return new_number
 
 @app.route("/", methods=['GET','POST'])
-def homepage():
+def registration():
     if request.method == 'POST':
-        phone = db_phone(request.form['phone'])
-        newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
-        db_session.add(newUser)
-        db_session.commit()
-        return redirect(url_for('homepage'))
+        if request.form['submit'] == "Sign Me Up!":
+            phone = db_phone(request.form['phone'])
+            newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
+            db_session.add(newUser)
+            db_session.commit()
+            return redirect(url_for('registration'))
+        elif request.form['submit'] == "I'll be there!":
+            phone = db_phone(request.form['rsvp_phone'])
+            current_user = db_session.query(User).filter_by(phone=phone).one()
+            current_user.tomorrow = 1
+            current_user.attendance += 1
+            db_session.add(current_user)
+            db_session.commit()
+            return redirect(url_for('registration'))
+        return redirect(url_for('registration'))
     else:
         return render_template('homepage.html')
 
-@app.route("/", methods=['GET','POST'])
-def reset_tomorrow():
-    if request.method == 'POST':
-        tomorrow_column = session.query(User.tomorrow).all()
-        for row in tomorrow_column:
-            row.tomorrow = 0
+#def rsvp(phone_number):
+#    if request.method == 'POST':
+#        if request.form[rsvp_phone]:
+#
+#        else:
+#            return render_template('homepage.html')
+#    else:
+#        return render_template('homepage.html')
+
+#@app.route("/", methods=['GET','POST'])
+#def reset_tomorrow():
+#    if request.method == 'POST':
+#        tomorrow_column = db_session.query(User.tomorrow).all()
+#        for row in tomorrow_column:
+#            row.tomorrow = 0
 
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
 def broadcast():
-    user_numbers = session.query(User.phone).all()
+    user_numbers = db_session.query(User.phone).all()
     for number in user_numbers:
         message = client.api.account.messages.create(to="XXXX",
                                                      from_="XXXX",
