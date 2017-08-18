@@ -71,21 +71,15 @@ def registration():
     else:
         return render_template('homepage.html')
 
-#def rsvp(phone_number):
-#    if request.method == 'POST':
-#        if request.form[rsvp_phone]:
-#
-#        else:
-#            return render_template('homepage.html')
-#    else:
-#        return render_template('homepage.html')
-
-#@app.route("/", methods=['GET','POST'])
-#def reset_tomorrow():
-#    if request.method == 'POST':
-#        tomorrow_column = db_session.query(User.tomorrow).all()
-#        for row in tomorrow_column:
-#            row.tomorrow = 0
+@app.route("/admin", methods=['GET','POST'])
+def reset_tomorrow():
+    if request.method == 'POST':
+        users = db_session.query(User).all()
+        for user in users:
+            user.tomorrow = 0
+            db_session.add(user)
+            db_session.commit()
+        return redirect(url_for('registration'))
 
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
@@ -119,5 +113,7 @@ def sms_respond():
 
     return str(resp)
 
+
 if __name__ == "__main__":
+    app.secret_key = 'super secret key'
     app.run(debug=True)
