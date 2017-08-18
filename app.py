@@ -63,7 +63,7 @@ def registration():
             phone = db_phone(request.form['rsvp_phone'])
             current_user = db_session.query(User).filter_by(phone=phone).one()
             current_user.tomorrow = 1
-            current_user.attendance += 1
+            current_user.attendance = current_user.attendance + 1
             db_session.add(current_user)
             db_session.commit()
             return redirect(url_for('registration'))
