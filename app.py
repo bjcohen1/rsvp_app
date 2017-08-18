@@ -81,6 +81,17 @@ def reset_tomorrow():
             db_session.commit()
         return redirect(url_for('registration'))
 
+@app.route("/unsubscribe", methods=['GET','POST'])
+def unsubscribe():
+    if request.method == 'POST':
+        phone = db_phone(user_input)
+        user = db_session.query(User).filter_by(phone=phone).one()
+        session.delete(user)
+        session.commit()
+        return redirect(url_for('registration'))
+    else:
+        return render_template('unsubscribe.html')
+
 #sends text message to "to" with body "body"
 @app.route("/broadcast", methods=['GET','POST'])
 def broadcast():
