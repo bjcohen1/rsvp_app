@@ -47,6 +47,11 @@ def db_phone(user_input):
             pass
     return new_number
 
+#@app.context_processor
+#def rsvp_tomorrow():
+#    attending = db_session.query(User).filter_by(attendance=1).count()
+#    return dict(str(attending))
+
 @app.route("/", methods=['GET','POST'])
 def registration():
     if request.method == 'POST':
@@ -69,7 +74,8 @@ def registration():
             return redirect(url_for('registration'))
         return redirect(url_for('registration'))
     else:
-        return render_template('homepage.html')
+        count = db_session.query(User).filter_by(tomorrow=1).count()
+        return render_template('homepage.html', registration=count)
 
 @app.route("/admin", methods=['GET','POST'])
 def reset_tomorrow():
@@ -84,7 +90,7 @@ def reset_tomorrow():
 @app.route("/unsubscribe", methods=['GET','POST'])
 def unsubscribe():
     if request.method == 'POST':
-        phone = db_phone(user_input)
+        phone = db_phone(request.form['phone'])
         user = db_session.query(User).filter_by(phone=phone).one()
         session.delete(user)
         session.commit()
