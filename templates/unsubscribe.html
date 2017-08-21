@@ -1,1 +1,14 @@
-<input>
+{% extends "base.html" %}
+
+{% block content %}
+<h2>We're Sorry to See You Go!</h2>
+<h4>If you're certain you'd like to unsubscribe,
+    type your phone number in below</h4>
+
+<form action = "{{ url_for('unsubscribe') }}" enctype = "multipart/form-data"
+    method = "post">
+    <h3>Phone Number: <input type="text" name="phone"></h3>
+    <input type="submit" name="submit" value="Unsubscribe">
+</form>
+
+{% endblock %}
