@@ -26,13 +26,14 @@ Base.metadata.bind = engine
 db_session = scoped_session(sessionmaker(bind=engine))
 Base.query = db_session.query_property()
 
+app = Flask(__name__)
+
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
 
-
+account_sid = "ACb4ec8f0a9340538cf9610492bdfbb443"
+auth_token = "37c1eb93ae4e6607e1cf2e79e3eb7d56"
 client = Client(account_sid, auth_token)
-
-app = Flask(__name__)
 
 # helper function to strip user input phone number to just numbers
 def db_phone(user_input):
@@ -108,21 +109,22 @@ def broadcast():
 
 @app.route("/sms_rsvp", methods=['POST'])
 def sms_rsvp():
-    """Respond to texter by name"""
-    from_number = db_phone(request.values.get('From', None))
-    registered_user = db_session.query(User).filter_by(phone=from_number).one()
+    """Update RSVP via user text"""
+    from_num = request.values.get('From', None)
+    db_from = db_phone(from_num[2:])
+    registered_user = db_session.query(User).filter_by(phone=db_from).one()
+
+    response = MessagingResponse()
 
     if registered_user:
         registered_user.tomorrow = 1
         message = "We can't wait to see you!"
     else:
-        message = "Doesn't look like you're registered for our site," +
-                    " once you register you can use text rsvp."
+        message = "Doesn't look like you're registered for our site, once you register you can use text rsvp."
 
-    resp = MessagingResponse()
-    resp.message(message)
+    response.message(message)
 
-    return str(resp)
+    return str(response)
 
 
 if __name__ == "__main__":
