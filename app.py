@@ -118,6 +118,7 @@ def sms_rsvp():
 
     if registered_user:
         registered_user.tomorrow = 1
+        register_user.attendance = registered_user.attendance + 1
         message = "We can't wait to see you!"
     else:
         message = '''Doesn't look like you're registered for our site,
