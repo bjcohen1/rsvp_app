@@ -31,8 +31,8 @@ app = Flask(__name__)
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
 
-account_sid = "ACb4ec8f0a9340538cf9610492bdfbb443"
-auth_token = "37c1eb93ae4e6607e1cf2e79e3eb7d56"
+account_sid = "XXXX"
+auth_token = "XXXX"
 client = Client(account_sid, auth_token)
 
 # helper function to strip user input phone number to just numbers
@@ -120,7 +120,8 @@ def sms_rsvp():
         registered_user.tomorrow = 1
         message = "We can't wait to see you!"
     else:
-        message = "Doesn't look like you're registered for our site, once you register you can use text rsvp."
+        message = '''Doesn't look like you're registered for our site,
+                    once you register you can use text rsvp.'''
 
     response.message(message)
 
