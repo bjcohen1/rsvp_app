@@ -20,21 +20,19 @@ import string
 
 from flask import make_response
 
-app = Flask(__name__)
-
 engine = create_engine('sqlite:///user_info.db')
 Base.metadata.bind = engine
 
 db_session = scoped_session(sessionmaker(bind=engine))
-#session = db_Session
 Base.query = db_session.query_property()
 
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
 
-account_sid = "XXXX"
-auth_token = "XXXX"
+
 client = Client(account_sid, auth_token)
+
+app = Flask(__name__)
 
 # helper function to strip user input phone number to just numbers
 def db_phone(user_input):
@@ -47,11 +45,7 @@ def db_phone(user_input):
             pass
     return new_number
 
-#@app.context_processor
-#def rsvp_tomorrow():
-#    attending = db_session.query(User).filter_by(attendance=1).count()
-#    return dict(str(attending))
-
+#landing page for user registration and next-day rsvp
 @app.route("/", methods=['GET','POST'])
 def registration():
     if request.method == 'POST':
@@ -77,6 +71,7 @@ def registration():
         count = db_session.query(User).filter_by(tomorrow=1).count()
         return render_template('homepage.html', registration=count)
 
+#admin page to reset counter for next day
 @app.route("/admin", methods=['GET','POST'])
 def reset_tomorrow():
     if request.method == 'POST':
@@ -87,43 +82,42 @@ def reset_tomorrow():
             db_session.commit()
         return redirect(url_for('registration'))
 
+#unsubscribe page for users no longer participating
 @app.route("/unsubscribe", methods=['GET','POST'])
 def unsubscribe():
     if request.method == 'POST':
         phone = db_phone(request.form['phone'])
         user = db_session.query(User).filter_by(phone=phone).one()
-        session.delete(user)
-        session.commit()
+        db_session.delete(user)
+        db_session.commit()
         return redirect(url_for('registration'))
     else:
         return render_template('unsubscribe.html')
 
-#sends text message to "to" with body "body"
+#sends text message to "to" with body "body" via Twilio API
 @app.route("/broadcast", methods=['GET','POST'])
 def broadcast():
     user_numbers = db_session.query(User.phone).all()
+    count = db_session.query(User).filter_by(tomorrow=1).count()
+    body = "We currently have " + count + "confirmed for tomorrow"
     for number in user_numbers:
-        message = client.api.account.messages.create(to="XXXX",
+        message = client.api.account.messages.create(to=number,
                                                      from_="XXXX",
-                                                     body="test")
+                                                     body=body)
     return str(message)
 
-#add callers section to respond to personalize response to incoming text
-#callers = {
-#    "num1" : "name_1",
-#    "num2" : "name_2",
-#    "num3" : "name_3"
-#}
-
-@app.route("/sms_answer", methods=['GET','POST'])
-def sms_respond():
+@app.route("/sms_rsvp", methods=['POST'])
+def sms_rsvp():
     """Respond to texter by name"""
+    from_number = db_phone(request.values.get('From', None))
+    registered_user = db_session.query(User).filter_by(phone=from_number).one()
 
-    from_number = request.values.get('From', None)
-    if from_number in callers:
-        message = callers[from_number] + ", thanks for the message!"
+    if registered_user:
+        registered_user.tomorrow = 1
+        message = "We can't wait to see you!"
     else:
-        message = "Hey friend, thanks for the message!"
+        message = "Doesn't look like you're registered for our site," +
+                    " once you register you can use text rsvp."
 
     resp = MessagingResponse()
     resp.message(message)
