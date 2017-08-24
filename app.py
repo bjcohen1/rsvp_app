@@ -52,6 +52,9 @@ def registration():
     if request.method == 'POST':
         if request.form['submit'] == "Sign Me Up!":
             phone = db_phone(request.form['phone'])
+            if len(phone) != 9:
+                flash("Please enter a valid phone number in the format provided")
+                return redirect(url_for('registration'))
             user_phone = db_session.query(User.phone).filter_by(phone=phone).scalar()
             if user_phone:
                 flash("You are already registered, please use the RSVP form or RSVP via Text")
