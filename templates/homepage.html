@@ -17,9 +17,9 @@
 
             <form action = "{{ url_for('registration') }}" enctype = "multipart/form-data" method = "post">
 
-                <h3> Name: </h3> <input type = 'text' name = 'name'>
-                <h3> Phone: </h3> <input type = 'text' name = 'phone' value='(XXX)-XXX-XXXX'>
-                <h3> Email: </h3> <input type = 'email' name = 'email'>
+                <h3> Name: </h3> <input type = 'text' name = 'name' required="True">
+                <h3> Phone: </h3> <input type = 'text' name = 'phone' value='(XXX)-XXX-XXXX' required="True">
+                <h3> Email: </h3> <input type = 'email' name = 'email' required="True">
 
                 <input type = 'checkbox' name = 'tomorrow'>
                 <span>And I'll Be There Tomorrow</span>
