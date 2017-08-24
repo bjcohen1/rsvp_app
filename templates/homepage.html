@@ -3,13 +3,22 @@
 
     {% block content %}
     <div class = "container">
-        <div class = "sign_up col-xs-2 col-md-2">
+        <div class = "sign_up col-xs-6">
             <h2>Sign-up Here:</h2>
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+
+                {% for message in messages %}
+                    <strong> {{message}} </strong>
+                {% endfor %}
+            {% endif %}
+            {% endwith %}
 
             <form action = "{{ url_for('registration') }}" enctype = "multipart/form-data" method = "post">
 
                 <h3> Name: </h3> <input type = 'text' name = 'name'>
-                <h3> Phone: </h3> <input type = 'text' name = 'phone'>
+                <h3> Phone: </h3> <input type = 'text' name = 'phone' value='(XXX)-XXX-XXXX'>
                 <h3> Email: </h3> <input type = 'email' name = 'email'>
 
                 <input type = 'checkbox' name = 'tomorrow'>
@@ -22,7 +31,7 @@
             </form>
         </div>
 
-        <div class = "rsvp col-xs-2 col-md-2">
+        <div class = "rsvp col-xs-6">
             <form action = "{{ url_for('registration') }}" enctype="
             multipart/form-data" method = "post">
 
@@ -31,10 +40,8 @@
                 <h3>Phone Number:</h3> <input type = 'text' name = 'rsvp_phone'>
                 <input type = 'submit' name = 'submit' value = "I'll be there!">
             </form>
+            <a href = "/unsubscribe" }}">Moving Out of Town?</a>
         </div>
-
-        <a href = "/unsubscribe" }}">Moving Out of Town?</a>
-
     </div>
 
     {% endblock %}

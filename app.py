@@ -52,13 +52,18 @@ def registration():
     if request.method == 'POST':
         if request.form['submit'] == "Sign Me Up!":
             phone = db_phone(request.form['phone'])
-            newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
-            if request.form.get('tomorrow'):
-                newUser.tomorrow = 1
-                newUser.attendance = 1
-            db_session.add(newUser)
-            db_session.commit()
-            return redirect(url_for('registration'))
+            user_phone = db_session.query(User.phone).filter_by(phone=phone).scalar()
+            if user_phone:
+                flash("You are already registered, please use the RSVP form or RSVP via Text")
+                return redirect(url_for('registration'))
+            else:
+                newUser = User(name=request.form['name'], phone=phone, email=request.form['email'])
+                if request.form.get('tomorrow'):
+                    newUser.tomorrow = 1
+                    newUser.attendance = 1
+                db_session.add(newUser)
+                db_session.commit()
+                return redirect(url_for('registration'))
         elif request.form['submit'] == "I'll be there!":
             phone = db_phone(request.form['rsvp_phone'])
             current_user = db_session.query(User).filter_by(phone=phone).one()
@@ -112,7 +117,7 @@ def sms_rsvp():
     """Update RSVP via user text"""
     from_num = request.values.get('From', None)
     db_from = db_phone(from_num[2:])
-    registered_user = db_session.query(User).filter_by(phone=db_from).one()
+    registered_user = db_session.query(User).filter_by(phone=db_from).scalar()
 
     response = MessagingResponse()
 
