@@ -31,8 +31,8 @@ app = Flask(__name__)
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
 
-account_sid = "XXXX"
-auth_token = "XXXX"
+account_sid = "ACb4ec8f0a9340538cf9610492bdfbb443"
+auth_token = "37c1eb93ae4e6607e1cf2e79e3eb7d56"
 client = Client(account_sid, auth_token)
 
 # helper function to strip user input phone number to just numbers
@@ -46,15 +46,21 @@ def db_phone(user_input):
             pass
     return new_number
 
+# helper function for sending texts
+#def send_texts(users):
+
+
 #landing page for user registration and next-day rsvp
 @app.route("/", methods=['GET','POST'])
 def registration():
     if request.method == 'POST':
         if request.form['submit'] == "Sign Me Up!":
             phone = db_phone(request.form['phone'])
+
             if len(phone) != 9:
                 flash("Please enter a valid phone number in the format provided")
                 return redirect(url_for('registration'))
+
             user_phone = db_session.query(User.phone).filter_by(phone=phone).scalar()
             if user_phone:
                 flash("You are already registered, please use the RSVP form or RSVP via Text")
@@ -67,6 +73,7 @@ def registration():
                 db_session.add(newUser)
                 db_session.commit()
                 return redirect(url_for('registration'))
+
         elif request.form['submit'] == "I'll be there!":
             phone = db_phone(request.form['rsvp_phone'])
             current_user = db_session.query(User).filter_by(phone=phone).one()
@@ -104,29 +111,34 @@ def unsubscribe():
         return render_template('unsubscribe.html')
 
 #sends text message to "to" with body "body" via Twilio API
-@app.route("/broadcast", methods=['GET','POST'])
+@app.route("/broadcast", methods=['GET'])
 def broadcast():
-    user_numbers = db_session.query(User.phone).all()
+    attending = db_session.query(User).filter_by(tomorrow=1).all()
+    not_attending = db_session.query(User).filter_by(tomorrow=0).all()
     count = db_session.query(User).filter_by(tomorrow=1).count()
-    body = "We currently have " + count + "confirmed for tomorrow"
-    for number in user_numbers:
-        message = client.api.account.messages.create(to=number,
-                                                     from_="XXXX",
-                                                     body=body)
-    return str(message)
+    for user in attending:
+        body = "Hey " + user.name + " we currently have " + str(count) + " confirmed for tomorrow"
+        number = "+1" + user.phone
+        client.api.account.messages.create(to=number, from_="+16468590687", body=body)
+    for user in not_attending:
+        body = "Hey " + user.name + " we currently have " + str(count) + ''' confirmed for tomorrow, do you think you can make it?
+        If you can, just respond to this text'''
+        number = "+1" + user.phone
+        client.api.account.messages.create(to=number, from_="+16468590687", body=body)
+    return redirect(url_for('reset_tomorrow'))
 
 @app.route("/sms_rsvp", methods=['POST'])
 def sms_rsvp():
     """Update RSVP via user text"""
     from_num = request.values.get('From', None)
     db_from = db_phone(from_num[2:])
-    registered_user = db_session.query(User).filter_by(phone=db_from).scalar()
+    registered_user = db_session.query(User).filter_by(phone=db_from).one()
 
     response = MessagingResponse()
 
     if registered_user:
         registered_user.tomorrow = 1
-        register_user.attendance = registered_user.attendance + 1
+        registered_user.attendance = registered_user.attendance + 1
         message = "We can't wait to see you!"
     else:
         message = '''Doesn't look like you're registered for our site,
