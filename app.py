@@ -31,8 +31,8 @@ app = Flask(__name__)
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
 
-account_sid = "ACb4ec8f0a9340538cf9610492bdfbb443"
-auth_token = "37c1eb93ae4e6607e1cf2e79e3eb7d56"
+account_sid = "XXXX"
+auth_token = "XXXX"
 client = Client(account_sid, auth_token)
 
 # helper function to strip user input phone number to just numbers
@@ -119,13 +119,12 @@ def broadcast():
     for user in attending:
         body = "Hey " + user.name + " we currently have " + str(count) + " confirmed for tomorrow"
         number = "+1" + user.phone
-        client.api.account.messages.create(to=number, from_="+16468590687", body=body)
+        client.api.account.messages.create(to=number, from_="XXXX", body=body)
     for user in not_attending:
-        body = "Hey " + user.name + " we currently have " + str(count) + ''' confirmed for tomorrow, do you think you can make it?
-        If you can, just respond to this text'''
+        body = "Hey " + user.name + " we currently have " + str(count) + ''' confirmed for tomorrow, do you think you can make it? If you can, just respond to this text'''
         number = "+1" + user.phone
-        client.api.account.messages.create(to=number, from_="+16468590687", body=body)
-    return redirect(url_for('reset_tomorrow'))
+        client.api.account.messages.create(to=number, from_="XXXX", body=body)
+    return render_template('broadcast.html')
 
 @app.route("/sms_rsvp", methods=['POST'])
 def sms_rsvp():
