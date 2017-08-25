@@ -4,5 +4,10 @@
     <!--Temporary fix to reset database values-->
     <form action = "{{ url_for('reset_tomorrow') }}" enctype="multipartform-data" method="post">
     <input type = Submit value = "Reset for Tomorrow">
+    </form>
+
+    <form action = "{{ url_for('broadcast') }}" method='GET'>
+    <input type = Submit value = "Broadcast to Users">
+    </form>
 
 {% endblock %}
