@@ -4,6 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask import flash, jsonify
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from flask_basicauth import BasicAuth
 
 from werkzeug.utils import secure_filename
 from functools import wraps
@@ -27,6 +28,12 @@ db_session = scoped_session(sessionmaker(bind=engine))
 Base.query = db_session.query_property()
 
 app = Flask(__name__)
+
+app.config['BASIC_AUTH_USERNAME'] = 'admin'
+app.config['BASIC_AUTH_PASSWORD'] = 'test'
+app.config['BASIC_AUTH_FORCE'] = False
+
+basic_auth = BasicAuth(app)
 
 admin = Admin(app)
 admin.add_view(ModelView(User, db_session))
@@ -89,6 +96,7 @@ def registration():
 
 #admin page to reset counter for next day
 @app.route("/admin", methods=['GET','POST'])
+@basic_auth.required
 def reset_tomorrow():
     if request.method == 'POST':
         users = db_session.query(User).all()
